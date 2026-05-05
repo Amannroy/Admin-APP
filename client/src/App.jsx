@@ -160,6 +160,18 @@ function TeacherForm() {
   const [subjects, setSubjects] = useState([]);
 
   const handleSubmit = async () => {
+
+    // ✅ validation
+    if (!name || !email || !password) {
+      alert("Please fill all fields ❌");
+      return;
+    }
+
+    if (subjects.length === 0) {
+      alert("Please select at least one subject ❌");
+      return;
+    }
+
     try {
       const res = await fetch(
         "https://admin-server-a08x.onrender.com/api/teachers",
@@ -169,7 +181,7 @@ function TeacherForm() {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({ name, email, password, subjects }),
-        },
+        }
       );
 
       const data = await res.json();
@@ -178,10 +190,14 @@ function TeacherForm() {
         alert(data.error);
       } else {
         alert("Teacher Added ✅");
+
+        // ✅ reset
         setName("");
         setEmail("");
         setPassword("");
+        setSubjects([]);
       }
+
     } catch (err) {
       console.error(err);
     }
@@ -196,25 +212,29 @@ function TeacherForm() {
         placeholder="Name"
         onChange={(e) => setName(e.target.value)}
       />
+
       <input
         value={email}
         placeholder="Email"
         onChange={(e) => setEmail(e.target.value)}
       />
+
       <input
+        type="password"
         value={password}
         placeholder="Password"
         onChange={(e) => setPassword(e.target.value)}
       />
-      {/* Multiple Select */}
+
       <select
         multiple
         value={subjects}
         onChange={(e) => {
           const selected = Array.from(
             e.target.selectedOptions,
-            (option) => option.value,
+            (option) => option.value
           );
+          console.log("Selected:", selected); // DEBUG
           setSubjects(selected);
         }}
       >
