@@ -12,7 +12,7 @@ function App() {
   // Function when login clicked
   const handleLogin = async () => {
     try {
-      const res = await fetch("http://localhost:5000/login", {
+      const res = await fetch("https://admin-server-a08x.onrender.com/login", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -41,7 +41,7 @@ function App() {
     try {
       const token = localStorage.getItem("token");
 
-      const res = await fetch("http://localhost:5000/dashboard", {
+      const res = await fetch("https://admin-server-a08x.onrender.com/dashboard", {
         method: "GET",
         headers: {
           Authorization: `Bearer ${token}`,
