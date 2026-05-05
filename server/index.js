@@ -3,6 +3,7 @@ import cors from "cors";
 import dotenv from "dotenv";
 
 import authRoutes from "./routes/auth.js";
+import dataRoutes from "./routes/data.js";
 
 // load env variables
 dotenv.config();
@@ -16,6 +17,7 @@ app.use(express.json());
 
 // Routes
 app.use("/", authRoutes);
+app.use("/api", dataRoutes);
 
 console.log("DB:", process.env.DB_URL);
 

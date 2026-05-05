@@ -1,15 +1,15 @@
 import { useState } from "react";
 
 function App() {
-  // Store Inputs
+  // 🔐 Login State
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-
-  // Track Login State
   const [loggedIn, setLoggedIn] = useState(false);
-  const [dashboardData, setDashboardData] = useState("");
 
-  // Function when login clicked
+  // 📄 Page switch (Student / Teacher / Fees)
+  const [page, setPage] = useState("");
+
+  // 🔑 LOGIN FUNCTION
   const handleLogin = async () => {
     try {
       const res = await fetch("https://admin-server-a08x.onrender.com/login", {
@@ -25,8 +25,6 @@ function App() {
       if (data.success) {
         localStorage.setItem("token", data.token);
         setLoggedIn(true);
-
-        fetchDashboard();
       } else {
         alert("Invalid credentials");
       }
@@ -35,58 +33,170 @@ function App() {
     }
   };
 
-  // FETCH DASHBOARD(PROTECTED ROUTE)
-
-  const fetchDashboard = async () => {
-    try {
-      const token = localStorage.getItem("token");
-
-      const res = await fetch("https://admin-server-a08x.onrender.com/dashboard", {
-        method: "GET",
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-
-      const data = await res.json();
-
-      console.log("Dashboard:", data);
-
-      // Store response
-      setDashboardData(data.message);
-
-    } catch (err) {
-      console.error(err);
-    }
-  };
-
-  // Show dashboard UI if logged in
+  // 🧠 DASHBOARD UI
   if (loggedIn) {
     return (
-    <div>
-      <h1>{dashboardData || "Loading..."}</h1>
-    </div>
+      <div style={{ padding: 20 }}>
+        <h1>Admin Dashboard</h1>
+
+        {/* Buttons */}
+        <button onClick={() => setPage("student")}>Add Student</button>
+        <button onClick={() => setPage("teacher")}>Add Teacher</button>
+        <button onClick={() => setPage("fees")}>Mark Fees</button>
+
+        <hr />
+
+        {/* Show Forms */}
+        {page === "student" && <StudentForm />}
+        {page === "teacher" && <TeacherForm />}
+        {page === "fees" && <FeesForm />}
+      </div>
     );
   }
 
-  // Login UI
+  // 🔐 LOGIN UI
   return (
     <div style={{ padding: 50 }}>
       <h2>Admin Login</h2>
 
-      <input placeholder="Email" onChange={(e) => setEmail(e.target.value)} />
-      <br />
-      <br />
+      <input
+        placeholder="Email"
+        onChange={(e) => setEmail(e.target.value)}
+      />
+      <br /><br />
 
       <input
         type="password"
         placeholder="Password"
         onChange={(e) => setPassword(e.target.value)}
       />
-      <br />
-      <br />
+      <br /><br />
 
       <button onClick={handleLogin}>Login</button>
+    </div>
+  );
+}
+
+/* ===================================================== */
+/* 🧑‍🎓 STUDENT FORM */
+/* ===================================================== */
+
+function StudentForm() {
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+
+  const handleSubmit = async () => {
+    try {
+      await fetch("https://admin-server-a08x.onrender.com/api/students", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ name, email }),
+      });
+
+      alert("Student Added ✅");
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  return (
+    <div>
+      <h2>Add Student</h2>
+
+      <input
+        placeholder="Name"
+        onChange={(e) => setName(e.target.value)}
+      />
+      <br />
+
+      <input
+        placeholder="Email"
+        onChange={(e) => setEmail(e.target.value)}
+      />
+      <br />
+
+      <button onClick={handleSubmit}>Save</button>
+    </div>
+  );
+}
+
+/* ===================================================== */
+/* 👨‍🏫 TEACHER FORM */
+/* ===================================================== */
+
+function TeacherForm() {
+  const [name, setName] = useState("");
+
+  const handleSubmit = async () => {
+    try {
+      await fetch("https://admin-server-a08x.onrender.com/api/teachers", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ name }),
+      });
+
+      alert("Teacher Added ✅");
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  return (
+    <div>
+      <h2>Add Teacher</h2>
+
+      <input
+        placeholder="Name"
+        onChange={(e) => setName(e.target.value)}
+      />
+      <br />
+
+      <button onClick={handleSubmit}>Save</button>
+    </div>
+  );
+}
+
+/* ===================================================== */
+/* 💰 FEES FORM */
+/* ===================================================== */
+
+function FeesForm() {
+  const [studentId, setStudentId] = useState("");
+
+  const handleSubmit = async () => {
+    try {
+      await fetch("https://admin-server-a08x.onrender.com/api/fees", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          student_id: studentId,
+          paid: true,
+        }),
+      });
+
+      alert("Fees Marked Paid ✅");
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  return (
+    <div>
+      <h2>Mark Fees</h2>
+
+      <input
+        placeholder="Student ID"
+        onChange={(e) => setStudentId(e.target.value)}
+      />
+      <br />
+
+      <button onClick={handleSubmit}>Mark Paid</button>
     </div>
   );
 }
