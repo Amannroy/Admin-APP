@@ -77,6 +77,7 @@ function StudentForm() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
+  const [studentClass, setStudentClass] = useState("");
 
   const handleSubmit = async () => {
     try {
@@ -87,7 +88,7 @@ function StudentForm() {
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({ name, email, phone }),
+          body: JSON.stringify({ name, email, phone, class: studentClass }),
         },
       );
 
@@ -126,6 +127,25 @@ function StudentForm() {
         onChange={(e) => setPhone(e.target.value)}
       />
 
+      <select
+        value={studentClass}
+        onChange={(e) => setStudentClass(e.target.value)}
+      >
+        <option value="">Select Class</option>
+        <option>LKG-1</option>
+        <option>UKG</option>
+        <option>1</option>
+        <option>2</option>
+        <option>3</option>
+        <option>4</option>
+        <option>5</option>
+        <option>6</option>
+        <option>7</option>
+        <option>8</option>
+        <option>9</option>
+        <option>10</option>
+      </select>
+
       <button onClick={handleSubmit}>Save</button>
     </div>
   );
@@ -137,6 +157,7 @@ function TeacherForm() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [subjects, setSubjects] = useState([]);
 
   const handleSubmit = async () => {
     try {
@@ -147,7 +168,7 @@ function TeacherForm() {
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({ name, email, password }),
+          body: JSON.stringify({ name, email, password, subjects }),
         },
       );
 
@@ -185,6 +206,24 @@ function TeacherForm() {
         placeholder="Password"
         onChange={(e) => setPassword(e.target.value)}
       />
+      {/* Multiple Select */}
+      <select
+        multiple
+        value={subjects}
+        onChange={(e) => {
+          const selected = Array.from(
+            e.target.selectedOptions,
+            (option) => option.value,
+          );
+          setSubjects(selected);
+        }}
+      >
+        <option value="Math">Math</option>
+        <option value="Science">Science</option>
+        <option value="English">English</option>
+        <option value="History">History</option>
+        <option value="Geography">Geography</option>
+      </select>
 
       <button onClick={handleSubmit}>Save</button>
     </div>
@@ -204,17 +243,20 @@ function FeesForm() {
     }
 
     try {
-      const res = await fetch("https://admin-server-a08x.onrender.com/api/fees", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
+      const res = await fetch(
+        "https://admin-server-a08x.onrender.com/api/fees",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            student_id: Number(studentId), // ✅ FIX
+            month: month,
+            paid: true,
+          }),
         },
-        body: JSON.stringify({
-          student_id: Number(studentId), // ✅ FIX
-          month: month,
-          paid: true,
-        }),
-      });
+      );
 
       const data = await res.json();
 
@@ -272,12 +314,13 @@ function ViewStudents() {
   const fetchFees = async () => {
     try {
       const res = await fetch(
-        "https://admin-server-a08x.onrender.com/api/fees");
+        "https://admin-server-a08x.onrender.com/api/fees",
+      );
 
-        if(!res.ok){
-          console.error("API ERROR:", res.status);
-          return;
-        }
+      if (!res.ok) {
+        console.error("API ERROR:", res.status);
+        return;
+      }
 
       const data = await res.json();
       setFees(data);
@@ -287,7 +330,7 @@ function ViewStudents() {
   };
 
   // Fetch data when component loads
-   useEffect(() => {
+  useEffect(() => {
     fetchStudents();
     fetchFees();
   }, []);
@@ -304,6 +347,7 @@ function ViewStudents() {
       <table border="1" cellPadding="10">
         <thead>
           <tr>
+            <th>ID</th>
             <th>Name</th>
             <th>Email</th>
             <th>Phone</th>
@@ -314,6 +358,7 @@ function ViewStudents() {
         <tbody>
           {students.map((s) => (
             <tr key={s.id}>
+              <td>{s.id}</td>
               <td>{s.name}</td>
               <td>{s.email}</td>
               <td>{s.phone}</td>

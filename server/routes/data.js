@@ -1,5 +1,6 @@
 import express from "express";
 import pool from "../db.js";
+import bcrypt from "bcrypt";
 
 const router = express.Router();
 
@@ -8,7 +9,7 @@ const router = express.Router();
 // Add student
 router.post("/students", async (req, res) => {
   try {
-    const { name, email, phone } = req.body;
+    const { name, email, phone, class: studentClass } = req.body;
 
     const existing = await pool.query(
       "SELECT * FROM students WHERE email=$1",
@@ -20,8 +21,8 @@ router.post("/students", async (req, res) => {
     }
 
     const result = await pool.query(
-      "INSERT INTO students (name, email, phone) VALUES ($1,$2,$3) RETURNING *",
-      [name, email, phone]
+      "INSERT INTO students (name, email, phone, class) VALUES ($1,$2,$3,$4) RETURNING *",
+      [name, email, phone, studentClass]
     );
 
     res.json(result.rows[0]);
@@ -45,10 +46,12 @@ router.get("/students", async (req, res) => {
 
 /* ================= TEACHERS ================= */
 
+// Add teacher
 router.post("/teachers", async (req, res) => {
   try {
-    const { name, email, password } = req.body;
+    const { name, email, password, subjects } = req.body;
 
+    // 1️⃣ Check duplicate
     const existing = await pool.query(
       "SELECT * FROM teachers WHERE email=$1",
       [email]
@@ -58,14 +61,21 @@ router.post("/teachers", async (req, res) => {
       return res.json({ error: "Teacher already exists ❌" });
     }
 
+    // 2️⃣ HASH PASSWORD
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    // 3️⃣ Convert subjects array → string
+    const subjectsString = JSON.stringify(subjects);
+
+    // 4️⃣ Insert into DB
     const result = await pool.query(
-      "INSERT INTO teachers (name, email, password) VALUES ($1,$2,$3) RETURNING *",
-      [name, email, password]
+      "INSERT INTO teachers (name, email, password, subjects) VALUES ($1,$2,$3,$4) RETURNING *",
+      [name, email, hashedPassword, subjectsString]
     );
 
     res.json(result.rows[0]);
   } catch (err) {
-    console.error(err);
+    console.error("TEACHER ERROR:", err);
     res.status(500).json({ error: "Error adding teacher" });
   }
 });
