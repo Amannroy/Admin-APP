@@ -232,7 +232,7 @@ function TeacherForm() {
         },
       };
 
-      // Open raxorpay popup
+      // Open razorpay popup
       const rzp = new window.Razorpay(options);
 
       rzp.open();
