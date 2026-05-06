@@ -160,7 +160,6 @@ function TeacherForm() {
   const [subjects, setSubjects] = useState([]);
 
   const handleSubmit = async () => {
-
     // ✅ validation
     if (!name || !email || !password) {
       alert("Please fill all fields ❌");
@@ -181,7 +180,7 @@ function TeacherForm() {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({ name, email, password, subjects }),
-        }
+        },
       );
 
       const data = await res.json();
@@ -197,9 +196,48 @@ function TeacherForm() {
         setPassword("");
         setSubjects([]);
       }
-
     } catch (err) {
       console.error(err);
+    }
+  };
+
+  const handlePayment = async () => {
+    try {
+      // Create order from backend
+      const res = await fetch("http://localhost:8080/api/create-order", {
+        method: "POST",
+      });
+
+      const order = await res.json();
+
+      console.log(order);
+
+      // Razorpay options
+      const options = {
+        key: "rzp_test_SlwtTuB0SnzH8F",
+        amount: order.amount,
+        currency: order.currency,
+        name: "Admin Dashboard",
+        description: "Fees Payment",
+        order_id: order.id,
+
+        handler: function (response) {
+          alert("payment Successful");
+
+          console.log(response);
+        },
+
+        theme: {
+          color: "#3399cc",
+        },
+      };
+
+      // Open raxorpay popup
+      const rzp = new window.Razorpay(options);
+
+      rzp.open();
+    } catch (err) {
+      console.log(err);
     }
   };
 
@@ -232,7 +270,7 @@ function TeacherForm() {
         onChange={(e) => {
           const selected = Array.from(
             e.target.selectedOptions,
-            (option) => option.value
+            (option) => option.value,
           );
           console.log("Selected:", selected); // DEBUG
           setSubjects(selected);
@@ -246,6 +284,10 @@ function TeacherForm() {
       </select>
 
       <button onClick={handleSubmit}>Save</button>
+
+      <button onClick={handlePayment}>
+        Pay Rs1
+      </button>
     </div>
   );
 }

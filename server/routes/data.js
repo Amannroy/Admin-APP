@@ -1,6 +1,7 @@
 import express from "express";
 import pool from "../db.js";
 import bcrypt from "bcryptjs";
+import razorpay from "../razorpay.js";
 
 const router = express.Router();
 
@@ -11,10 +12,9 @@ router.post("/students", async (req, res) => {
   try {
     const { name, email, phone, class: studentClass } = req.body;
 
-    const existing = await pool.query(
-      "SELECT * FROM students WHERE email=$1",
-      [email]
-    );
+    const existing = await pool.query("SELECT * FROM students WHERE email=$1", [
+      email,
+    ]);
 
     if (existing.rows.length > 0) {
       return res.json({ error: "Student already exists ❌" });
@@ -22,7 +22,7 @@ router.post("/students", async (req, res) => {
 
     const result = await pool.query(
       "INSERT INTO students (name, email, phone, class) VALUES ($1,$2,$3,$4) RETURNING *",
-      [name, email, phone, studentClass]
+      [name, email, phone, studentClass],
     );
 
     res.json(result.rows[0]);
@@ -43,7 +43,6 @@ router.get("/students", async (req, res) => {
   }
 });
 
-
 /* ================= TEACHERS ================= */
 
 // Add teacher
@@ -52,10 +51,9 @@ router.post("/teachers", async (req, res) => {
     const { name, email, password, subjects } = req.body;
 
     // 1️⃣ Check duplicate
-    const existing = await pool.query(
-      "SELECT * FROM teachers WHERE email=$1",
-      [email]
-    );
+    const existing = await pool.query("SELECT * FROM teachers WHERE email=$1", [
+      email,
+    ]);
 
     if (existing.rows.length > 0) {
       return res.json({ error: "Teacher already exists ❌" });
@@ -70,7 +68,7 @@ router.post("/teachers", async (req, res) => {
     // 4️⃣ Insert into DB
     const result = await pool.query(
       "INSERT INTO teachers (name, email, password, subjects) VALUES ($1,$2,$3,$4) RETURNING *",
-      [name, email, hashedPassword, subjectsString]
+      [name, email, hashedPassword, subjectsString],
     );
 
     res.json(result.rows[0]);
@@ -80,6 +78,27 @@ router.post("/teachers", async (req, res) => {
   }
 });
 
+// ================= PAYMENT =================
+
+// Create Razorpay order
+router.post("/create-order", async (req, res) => {
+  try {
+    const options = {
+      amount: 100,
+      currency: "INR",
+      receipt: "receipt_order_1",
+    };
+
+    const order = await razorpay.orders.create(options);
+
+    res.json(order);
+  } catch (err) {
+    console.log("RAZORPAY ERROR:", err);
+    res.status(500).json({
+      error: "Failed to create order",
+    });
+  }
+});
 
 /* ================= FEES ================= */
 
@@ -90,7 +109,7 @@ router.post("/fees", async (req, res) => {
 
     const existing = await pool.query(
       "SELECT * FROM fees WHERE student_id=$1 AND month=$2",
-      [student_id, month]
+      [student_id, month],
     );
 
     if (existing.rows.length > 0) {
@@ -99,7 +118,7 @@ router.post("/fees", async (req, res) => {
 
     await pool.query(
       "INSERT INTO fees (student_id, month, paid) VALUES ($1,$2,$3)",
-      [student_id, month, paid]
+      [student_id, month, paid],
     );
 
     res.json({ success: true });
@@ -117,6 +136,35 @@ router.get("/fees", async (req, res) => {
   } catch (err) {
     console.error("FEES ERROR:", err);
     res.status(500).json({ error: "Error fetching fees" });
+  }
+});
+
+// ================= WEBHOOK =================
+//  This route acts like a receiver. Razorpay -> /razprpay-webhook-> Backend receives payment event -> Save payment in DB
+router.post("/razorpay-webhook", async (req, res) => {
+  try {
+    console.log("WEBHOOK RECEIVED");
+
+    console.log(req.body);
+
+    await pool.query(
+      "INSERT INTO payments (razorpay_payment_id, amount, status) VALUES ($1,$2,$3)",
+      [
+        "test_payment_123",
+        100,
+        "captured"
+      ]
+    );
+
+    res.status(200).json({
+      success: true,
+    });
+
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({
+      error: "Webhook failed",
+    });
   }
 });
 
