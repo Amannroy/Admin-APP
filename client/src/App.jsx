@@ -10,7 +10,7 @@ function App() {
 
   const handleLogin = async () => {
     try {
-      const res = await fetch("https://admin-server-a08x.onrender.com/login", {
+      const res = await fetch("https://admin-server-435275437318.europe-west1.run.app/login", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -82,7 +82,7 @@ function StudentForm() {
   const handleSubmit = async () => {
     try {
       const res = await fetch(
-        "https://admin-server-a08x.onrender.com/api/students",
+        "https://admin-server-435275437318.europe-west1.run.app/api/students",
         {
           method: "POST",
           headers: {
@@ -173,7 +173,7 @@ function TeacherForm() {
 
     try {
       const res = await fetch(
-        "https://admin-server-a08x.onrender.com/api/teachers",
+        "https://admin-server-435275437318.europe-west1.run.app/api/teachers",
         {
           method: "POST",
           headers: {
@@ -204,7 +204,7 @@ function TeacherForm() {
   const handlePayment = async () => {
     try {
       // Create order from backend
-      const res = await fetch("http://localhost:8080/api/create-order", {
+      const res = await fetch("https://admin-server-435275437318.europe-west1.run.app/api/create-order", {
         method: "POST",
       });
 
@@ -306,7 +306,7 @@ function FeesForm() {
 
     try {
       const res = await fetch(
-        "https://admin-server-a08x.onrender.com/api/fees",
+        "https://admin-server-435275437318.europe-west1.run.app/api/fees",
         {
           method: "POST",
           headers: {
@@ -364,7 +364,7 @@ function ViewStudents() {
   const fetchStudents = async () => {
     try {
       const res = await fetch(
-        "https://admin-server-a08x.onrender.com/api/students",
+        "https://admin-server-435275437318.europe-west1.run.app/api/students",
       );
       const data = await res.json();
       setStudents(data);
@@ -376,7 +376,7 @@ function ViewStudents() {
   const fetchFees = async () => {
     try {
       const res = await fetch(
-        "https://admin-server-a08x.onrender.com/api/fees",
+        "https://admin-server-435275437318.europe-west1.run.app/api/fees",
       );
 
       if (!res.ok) {
