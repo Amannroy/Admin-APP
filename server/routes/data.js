@@ -9,6 +9,9 @@ const router = express.Router();
 
 // Add student
 router.post("/students", async (req, res) => {
+
+console.log("USING DB:", process.env.DATABASE_URL);
+
   try {
     const { name, email, phone, class: studentClass } = req.body;
 
@@ -31,6 +34,7 @@ router.post("/students", async (req, res) => {
     res.status(500).json({ error: "Error adding student" });
   }
 });
+
 
 // Get all students
 router.get("/students", async (req, res) => {
