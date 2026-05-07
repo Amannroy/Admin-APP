@@ -2,7 +2,7 @@
 import dotenv from "dotenv";
 
 // load env variables
-dotenv.config({ path: "./.env" });
+dotenv.config();
 
 import express from "express";
 import cors from "cors";
