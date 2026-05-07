@@ -8,9 +8,11 @@ function App() {
   const [loggedIn, setLoggedIn] = useState(false);
   const [page, setPage] = useState("");
 
+  // url= "https://admin-server-435275437318.europe-west1.run.app"
+
   const handleLogin = async () => {
     try {
-      const res = await fetch("https://admin-server-435275437318.europe-west1.run.app/login", {
+      const res = await fetch("/login", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -82,7 +84,7 @@ function StudentForm() {
   const handleSubmit = async () => {
     try {
       const res = await fetch(
-        "https://admin-server-435275437318.europe-west1.run.app/api/students",
+        "/api/students",
         {
           method: "POST",
           headers: {
@@ -173,7 +175,7 @@ function TeacherForm() {
 
     try {
       const res = await fetch(
-        "https://admin-server-435275437318.europe-west1.run.app/api/teachers",
+        "/api/teachers",
         {
           method: "POST",
           headers: {
@@ -204,7 +206,7 @@ function TeacherForm() {
   const handlePayment = async () => {
     try {
       // Create order from backend
-      const res = await fetch("https://admin-server-435275437318.europe-west1.run.app/api/create-order", {
+      const res = await fetch("/api/create-order", {
         method: "POST",
       });
 
@@ -306,7 +308,7 @@ function FeesForm() {
 
     try {
       const res = await fetch(
-        "https://admin-server-435275437318.europe-west1.run.app/api/fees",
+        "/api/fees",
         {
           method: "POST",
           headers: {
@@ -364,7 +366,7 @@ function ViewStudents() {
   const fetchStudents = async () => {
     try {
       const res = await fetch(
-        "https://admin-server-435275437318.europe-west1.run.app/api/students",
+        "/api/students",
       );
       const data = await res.json();
       setStudents(data);
@@ -376,7 +378,7 @@ function ViewStudents() {
   const fetchFees = async () => {
     try {
       const res = await fetch(
-        "https://admin-server-435275437318.europe-west1.run.app/api/fees",
+        "/api/fees",
       );
 
       if (!res.ok) {
