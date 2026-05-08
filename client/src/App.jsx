@@ -36,7 +36,7 @@ function App() {
   if (loggedIn) {
     return (
       <div style={{ padding: 20 }}>
-        <h1>Admin Dashboard</h1>
+        <h1>Admin Dashboard CICD Working</h1>
 
         <div className="nav-buttons">
           <button onClick={() => setPage("student")}>Add Student</button>
