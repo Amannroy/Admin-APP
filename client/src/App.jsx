@@ -81,18 +81,17 @@ function StudentForm() {
   const [phone, setPhone] = useState("");
   const [studentClass, setStudentClass] = useState("");
 
+  const [file, setFile] = useState(null);
+
   const handleSubmit = async () => {
     try {
-      const res = await fetch(
-        "/api/students",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ name, email, phone, class: studentClass }),
+      const res = await fetch("/api/students", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
         },
-      );
+        body: JSON.stringify({ name, email, phone, class: studentClass }),
+      });
 
       const data = await res.json();
 
@@ -106,6 +105,29 @@ function StudentForm() {
       }
     } catch (err) {
       console.error(err);
+    }
+  };
+
+  const handleCSVUpload = async () => {
+    const formData = new FormData();
+
+    formData.append("file", file);
+
+    try {
+      const res = await fetch("/api/upload-students", {
+        method: "POST",
+        body: formData,
+      });
+
+      const data = await res.json();
+
+      if (data.success) {
+        alert("CSV Uploaded Successfully");
+      } else {
+        alert("Upload failed");
+      }
+    } catch (err) {
+      console.log(err);
     }
   };
 
@@ -149,6 +171,17 @@ function StudentForm() {
       </select>
 
       <button onClick={handleSubmit}>Save</button>
+
+      <hr />
+      <h3>Bulk Upload CSV</h3>
+
+      <input
+        type="file"
+        accept=".csv"
+        onChange={(e) => setFile(e.target.files[0])}
+      />
+
+      <button onClick={handleCSVUpload}>Upload CSV</button>
     </div>
   );
 }
@@ -160,6 +193,8 @@ function TeacherForm() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [subjects, setSubjects] = useState([]);
+
+  const [file, setFile] = useState(null);
 
   const handleSubmit = async () => {
     // ✅ validation
@@ -174,16 +209,13 @@ function TeacherForm() {
     }
 
     try {
-      const res = await fetch(
-        "/api/teachers",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ name, email, password, subjects }),
+      const res = await fetch("/api/teachers", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
         },
-      );
+        body: JSON.stringify({ name, email, password, subjects }),
+      });
 
       const data = await res.json();
 
@@ -200,6 +232,29 @@ function TeacherForm() {
       }
     } catch (err) {
       console.error(err);
+    }
+  };
+
+  const handleTeacherCSVUpload = async () => {
+    const formData = new FormData();
+
+    formData.append("file", file);
+
+    try {
+      const res = await fetch("/api/upload-teachers", {
+        method: "POST",
+        body: formData,
+      });
+
+      const data = await res.json();
+
+      if (data.success) {
+        alert("Teacher CSV Uploaded Successfully ✅");
+      } else {
+        alert("Upload failed ❌");
+      }
+    } catch (err) {
+      console.log(err);
     }
   };
 
@@ -287,9 +342,19 @@ function TeacherForm() {
 
       <button onClick={handleSubmit}>Save</button>
 
-      <button onClick={handlePayment}>
-        Pay Rs1
-      </button>
+      <hr />
+
+      <h3>Bulk Teacher Upload CSV</h3>
+
+      <input
+        type="file"
+        accept=".csv"
+        onChange={(e) => setFile(e.target.files[0])}
+      />
+
+      <button onClick={handleTeacherCSVUpload}>Upload Teacher CSV</button>
+
+      <button onClick={handlePayment}>Pay Rs1</button>
     </div>
   );
 }
@@ -307,20 +372,17 @@ function FeesForm() {
     }
 
     try {
-      const res = await fetch(
-        "/api/fees",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            student_id: Number(studentId), // ✅ FIX
-            month: month,
-            paid: true,
-          }),
+      const res = await fetch("/api/fees", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
         },
-      );
+        body: JSON.stringify({
+          student_id: Number(studentId), // ✅ FIX
+          month: month,
+          paid: true,
+        }),
+      });
 
       const data = await res.json();
 
@@ -365,9 +427,7 @@ function ViewStudents() {
 
   const fetchStudents = async () => {
     try {
-      const res = await fetch(
-        "/api/students",
-      );
+      const res = await fetch("/api/students");
       const data = await res.json();
       setStudents(data);
     } catch (err) {
@@ -377,9 +437,7 @@ function ViewStudents() {
 
   const fetchFees = async () => {
     try {
-      const res = await fetch(
-        "/api/fees",
-      );
+      const res = await fetch("/api/fees");
 
       if (!res.ok) {
         console.error("API ERROR:", res.status);

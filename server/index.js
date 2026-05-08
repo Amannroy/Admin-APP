@@ -11,6 +11,7 @@ import {fileURLToPath} from "url";
 
 import authRoutes from "./routes/auth.js";
 import dataRoutes from "./routes/data.js";
+import uploadRoutes from "./routes/uploadRoutes.js";
 
 const app = express();
 
@@ -22,6 +23,7 @@ app.use(express.json());
 // API Routes
 app.use("/", authRoutes);
 app.use("/api", dataRoutes);
+app.use("/api", uploadRoutes);
 
 //  ================= FRONTEND SETUP =================
 
