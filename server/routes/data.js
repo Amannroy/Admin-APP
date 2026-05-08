@@ -10,7 +10,6 @@ const router = express.Router();
 // Add student
 router.post("/students", async (req, res) => {
 
-console.log("USING DB:", process.env.DATABASE_URL);
 
   try {
     const { name, email, phone, class: studentClass } = req.body;

@@ -2,13 +2,12 @@ import pkg from "pg";
 
 const { Pool } = pkg;
 
-console.log("FINAL DB URL:", process.env.DATABASE_URL);
-
 const pool = new Pool({
-  connectionString: process.env.DATABASE_URL,
-  ssl: {
-    rejectUnauthorized: false,
-  },
+  user: process.env.DB_USER,
+  password: process.env.DB_PASS,
+  database: process.env.DB_NAME,
+  host: `/cloudsql/${process.env.INSTANCE_CONNECTION_NAME}`,
+  port: 5432,
 });
 
 export default pool;

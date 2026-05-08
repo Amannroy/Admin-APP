@@ -41,7 +41,6 @@ app.get("/*splat", (req, res) => {
     res.sendFile(path.join(frontendPath, "index.html"));
 })
 
-console.log("DB:", process.env.DATABASE_URL);
 
 
 // ================= SERVER =================
