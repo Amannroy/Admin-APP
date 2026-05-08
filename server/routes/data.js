@@ -82,6 +82,7 @@ router.post("/teachers", async (req, res) => {
       details: err.message
    });
 }
+})
 
 // ================= PAYMENT =================
 
