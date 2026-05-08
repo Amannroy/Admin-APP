@@ -75,11 +75,13 @@ router.post("/teachers", async (req, res) => {
     );
 
     res.json(result.rows[0]);
-  } catch (err) {
-    console.error("TEACHER ERROR:", err);
-    res.status(500).json({ error: "Error adding teacher" });
-  }
-});
+  } catch(err){
+   console.error(err);
+   res.status(500).json({
+      error: "Error adding teacher",
+      details: err.message
+   });
+}
 
 // ================= PAYMENT =================
 
